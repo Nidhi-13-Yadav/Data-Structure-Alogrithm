@@ -1,2 +1,2 @@
-
-Data Structure Alogrithm 
+#Data Structure Algorithm
+Data Structure Algorithm 
