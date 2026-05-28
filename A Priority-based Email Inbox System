@@ -1,0 +1,113 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+// Structure for an Email
+struct Email {
+    char subject[100];
+    int priority;
+    struct Email* next;
+};
+
+// Head of the inbox (priority queue)
+struct Email* head = NULL;
+
+// Function to create a new email node
+struct Email* createEmail(char subject[], int priority) {
+    struct Email* newEmail = (struct Email*)malloc(sizeof(struct Email));
+    strcpy(newEmail->subject, subject);
+    newEmail->priority = priority;
+    newEmail->next = NULL;
+    return newEmail;
+}
+
+// Insert email in sorted order by priority (ascending)
+void insertEmail(char subject[], int priority) {
+    struct Email* newEmail = createEmail(subject, priority);
+    if (head == NULL || priority < head->priority) {
+        newEmail->next = head;
+        head = newEmail;
+    } else {
+        struct Email* temp = head;
+        while (temp->next != NULL && temp->next->priority <= priority) {
+            temp = temp->next;
+        }
+        newEmail->next = temp->next;
+        temp->next = newEmail;
+    }
+    printf("Email added successfully!\n");
+}
+
+// Display all emails
+void displayInbox() {
+    if (head == NULL) {
+        printf("Inbox is empty.\n");
+        return;
+    }
+
+    struct Email* temp = head;
+    printf("\n--- Inbox ---\n");
+    while (temp != NULL) {
+        char* pText = (temp->priority == 1) ? "High" :
+                      (temp->priority == 2) ? "Medium" : "Low";
+        printf("Subject: %s | Priority: %s\n", temp->subject, pText);
+        temp = temp->next;
+    }
+    printf("------------------\n");
+}
+
+// Delete the top-priority email (simulate reading)
+void deleteTopEmail() {
+    if (head == NULL) {
+        printf("Inbox is empty. Nothing to delete.\n");
+        return;
+    }
+    struct Email* temp = head;
+    head = head->next;
+    printf("Deleted Email: %s (Priority: %d)\n", temp->subject, temp->priority);
+    free(temp);
+}
+
+// Main Menu
+int main() {
+    int choice, priority;
+    char subject[100];
+
+    do {
+        printf("\n===== Priority Inbox Menu =====\n");
+        printf("1. Add Email\n");
+        printf("2. View Inbox\n");
+        printf("3. Delete Top Priority Email\n");
+        printf("4. Exit\n");
+        printf("Enter your choice: ");
+        scanf("%d", &choice);
+
+        switch (choice) {
+            case 1:
+                printf("Enter email subject: ");
+                scanf(" %[^\n]%*c", subject);  // read subject with spaces
+                printf("Enter priority (1 = High, 2 = Medium, 3 = Low): ");
+                scanf("%d", &priority);
+                insertEmail(subject, priority);
+                break;
+
+            case 2:
+                displayInbox();
+                break;
+
+            case 3:
+                deleteTopEmail();
+                break;
+
+            case 4:
+                printf("Exiting Priority Inbox.\n");
+                break;
+
+            default:
+                printf("Invalid choice. Try again.\n");
+        }
+
+    } while (choice != 4);
+
+    return 0;
+}
